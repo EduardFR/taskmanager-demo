@@ -96,7 +96,7 @@ function createTaskEditTemplate(data) {
 
   const colorsTemplate = createTaskEditColorsTemplate(color);
 
-  const isSubmitDisabled = isRepeating && !isTaskRepeating(repeating);
+  const isSubmitDisabled = (isDueDate && dueDate === null) || (isRepeating && !isTaskRepeating(repeating));
 
   return (
     `<article class="card card--edit card--${color} ${repeatingClassName}">
@@ -153,6 +153,7 @@ export default class TaskEditView extends AbstractStatefulView {
     this._setState(TaskEditView.parseTaskToState(task));
 
     this.#setInnerHandlers();
+    this.#setDatepicker();
   }
 
   get template() {
@@ -183,6 +184,7 @@ export default class TaskEditView extends AbstractStatefulView {
 
   _restoreHandlers() {
     this.#setInnerHandlers();
+    this.#setDatepicker();
     this.setFormSubmitHandler(this._callback.formSubmit);
   }
 
