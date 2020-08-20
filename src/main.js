@@ -11,8 +11,19 @@ const tasksModel = new TasksModel();
 const filterModel = new FilterModel();
 const boardPresenter = new BoardPresenter(siteMainElement, tasksModel, filterModel);
 const filterPresenter = new FilterPresenter(siteMainElement, filterModel, tasksModel);
+const newTaskButtonComponent = new NewTaskButtonView();
 
-render(new NewTaskButtonView(), siteHeaderElement);
+function handleNewTaskFormClose() {
+  newTaskButtonComponent.element.disabled = false;
+}
+
+function handleNewTaskButtonClick() {
+  boardPresenter.createTask(handleNewTaskFormClose);
+  newTaskButtonComponent.element.disabled = true;
+}
+
+render(newTaskButtonComponent, siteHeaderElement);
+newTaskButtonComponent.setClickHandler(handleNewTaskButtonClick);
 
 filterPresenter.init();
 boardPresenter.init();
