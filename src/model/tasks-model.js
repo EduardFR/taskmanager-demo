@@ -1,12 +1,18 @@
 export default class TasksModel {
-  tasks = [];
-
   constructor({tasksApiService}) {
     this.tasksApiService = tasksApiService;
   }
 
+  async init() {
+    try {
+      this.tasks = await this.tasksApiService.getTasks();
+    } catch(err) {
+      this.tasks = [];
+    }
+  }
+
   getTasks() {
-    // Получить список задач
+    return this.tasks;
   }
 
   updateTask() {
