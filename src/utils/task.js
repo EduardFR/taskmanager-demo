@@ -7,5 +7,8 @@ function isTaskExpired(dueDate) {
   return dueDate && dayjs().isAfter(dueDate, 'D');
 }
 
-export {humanizeTaskDueDate, isTaskExpired};
+function isTaskRepeating(repeating) {
+  return Object.values(repeating).some(Boolean);
+}
 
+export {humanizeTaskDueDate, isTaskExpired, isTaskRepeating};
