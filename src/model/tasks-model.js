@@ -15,15 +15,49 @@ export default class TasksModel {
     return this.tasks;
   }
 
-  updateTask() {
-    // Обновить задачу
+  async updateTask(update) {
+    const index = this.tasks.findIndex((task) => task.id === update.id);
+
+    if (index === -1) {
+      throw new Error('Can\'t update unexisting task');
+    }
+
+    try {
+      const updatedTask = await this.tasksApiService.updateTask(update);
+      this.tasks = [
+        ...this.tasks.slice(0, index),
+        updatedTask,
+        ...this.tasks.slice(index + 1),
+      ];
+    } catch(err) {
+      throw new Error('Can\'t update task');
+    }
   }
 
-  addTask() {
-    // Добавить задачу
+  async addTask(update) {
+    try {
+      const newTask = await this.tasksApiService.addTask(update);
+      this.tasks = [newTask, ...this.tasks];
+    } catch(err) {
+      throw new Error('Can\'t add task');
+    }
   }
 
-  deleteTask() {
-    // Удалить задачу
+  async deleteTask(update) {
+    const index = this.tasks.findIndex((task) => task.id === update.id);
+
+    if (index === -1) {
+      throw new Error('Can\'t delete unexisting task');
+    }
+
+    try {
+      await this.tasksApiService.deleteTask(update);
+      this.tasks = [
+        ...this.tasks.slice(0, index),
+        ...this.tasks.slice(index + 1),
+      ];
+    } catch(err) {
+      throw new Error('Can\'t delete task');
+    }
   }
 }
