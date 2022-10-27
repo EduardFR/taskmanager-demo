@@ -1,5 +1,6 @@
 import TasksApiService from './mock/tasks-api-service.js';
 import TasksModel from './model/tasks-model.js';
+import FilterModel from './model/filter-model.js';
 import NewTaskButtonView from './view/new-task-button-view.js';
 import {render} from './render.js';
 import BoardPresenter from './presenter/board-presenter.js';
@@ -11,12 +12,15 @@ const siteHeaderElement = siteMainElement.querySelector('.main__control');
 const tasksModel = new TasksModel({
   tasksApiService: new TasksApiService()
 });
+const filterModel = new FilterModel();
 const boardPresenter = new BoardPresenter({
   boardContainer: siteMainElement,
   tasksModel
 });
 const filterPresenter = new FilterPresenter({
-  filterContainer: siteMainElement
+  filterContainer: siteMainElement,
+  filterModel,
+  tasksModel
 });
 
 render(new NewTaskButtonView(), siteHeaderElement);
