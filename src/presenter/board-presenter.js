@@ -22,7 +22,7 @@ export default class BoardPresenter {
     render(new TaskEditView(), this.taskListComponent.getElement());
 
     for (let i = 0; i < this.tasksModel.getTasks().length; i++) {
-      render(new TaskView(this.tasksModel.getTasks()[i]), this.taskListComponent.getElement());
+      render(new TaskView({task: this.tasksModel.getTasks()[i]}), this.taskListComponent.getElement());
     }
 
     render(new LoadMoreButtonView(), this.boardComponent.getElement());
