@@ -48,6 +48,10 @@ export default class FilterPresenter {
   }
 
   init() {
-    render(new FilterView(), this.filterContainer);
+    this.filterComponent = new FilterView({
+      filters: this.getFilters(),
+      currentFilterType: this.filterModel.getFilter(),
+    });
+    render(this.filterComponent, this.filterContainer);
   }
 }
