@@ -5,7 +5,7 @@ export default class TasksModel extends Observable {
   #tasksApiService = null;
   #tasks = [];
 
-  constructor(tasksApiService) {
+  constructor({tasksApiService}) {
     super();
     this.#tasksApiService = tasksApiService;
   }

@@ -11,8 +11,8 @@ const Mode = {
 
 export default class TaskPresenter {
   #taskListContainer = null;
-  #changeData = null;
-  #changeMode = null;
+  #onDataChange = null;
+  #onModeChange = null;
 
   #taskComponent = null;
   #taskEditComponent = null;
@@ -20,10 +20,10 @@ export default class TaskPresenter {
   #task = null;
   #mode = Mode.DEFAULT;
 
-  constructor(taskListContainer, changeData, changeMode) {
+  constructor({taskListContainer, onDataChange, onModeChange}) {
     this.#taskListContainer = taskListContainer;
-    this.#changeData = changeData;
-    this.#changeMode = changeMode;
+    this.#onDataChange = onDataChange;
+    this.#onModeChange = onModeChange;
   }
 
   init(task) {
@@ -32,14 +32,17 @@ export default class TaskPresenter {
     const prevTaskComponent = this.#taskComponent;
     const prevTaskEditComponent = this.#taskEditComponent;
 
-    this.#taskComponent = new TaskView(task);
-    this.#taskEditComponent = new TaskEditView(task);
-
-    this.#taskComponent.setEditClickHandler(this.#handleEditClick);
-    this.#taskComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
-    this.#taskComponent.setArchiveClickHandler(this.#handleArchiveClick);
-    this.#taskEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
-    this.#taskEditComponent.setDeleteClickHandler(this.#handleDeleteClick);
+    this.#taskComponent = new TaskView({
+      task: this.#task,
+      onEditClick: this.#handleEditClick,
+      onFavoriteClick: this.#handleFavoriteClick,
+      onArchiveClick: this.#handleArchiveClick
+    });
+    this.#taskEditComponent = new TaskEditView({
+      task: this.#task,
+      onFormSubmit: this.#handleFormSubmit,
+      onDeleteClick: this.#handleDeleteClick
+    });
 
     if (prevTaskComponent === null || prevTaskEditComponent === null) {
       render(this.#taskComponent, this.#taskListContainer);
@@ -109,7 +112,7 @@ export default class TaskPresenter {
   #replaceCardToForm = () => {
     replace(this.#taskEditComponent, this.#taskComponent);
     document.addEventListener('keydown', this.#escKeyDownHandler);
-    this.#changeMode();
+    this.#onModeChange();
     this.#mode = Mode.EDITING;
   };
 
@@ -132,7 +135,7 @@ export default class TaskPresenter {
   };
 
   #handleFavoriteClick = () => {
-    this.#changeData(
+    this.#onDataChange(
       UserAction.UPDATE_TASK,
       UpdateType.MINOR,
       {...this.#task, isFavorite: !this.#task.isFavorite},
@@ -140,7 +143,7 @@ export default class TaskPresenter {
   };
 
   #handleArchiveClick = () => {
-    this.#changeData(
+    this.#onDataChange(
       UserAction.UPDATE_TASK,
       UpdateType.MINOR,
       {...this.#task, isArchive: !this.#task.isArchive},
@@ -154,7 +157,7 @@ export default class TaskPresenter {
       !isDatesEqual(this.#task.dueDate, update.dueDate) ||
       isTaskRepeating(this.#task.repeating) !== isTaskRepeating(update.repeating);
 
-    this.#changeData(
+    this.#onDataChange(
       UserAction.UPDATE_TASK,
       isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
       update,
@@ -162,7 +165,7 @@ export default class TaskPresenter {
   };
 
   #handleDeleteClick = (task) => {
-    this.#changeData(
+    this.#onDataChange(
       UserAction.DELETE_TASK,
       UpdateType.MINOR,
       task,

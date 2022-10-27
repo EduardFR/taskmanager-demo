@@ -36,14 +36,21 @@ export default class BoardPresenter {
   #currentSortType = SortType.DEFAULT;
   #filterType = FilterType.ALL;
   #isLoading = true;
-  #uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
+  #uiBlocker = new UiBlocker({
+    lowerLimit: TimeLimit.LOWER_LIMIT,
+    upperLimit: TimeLimit.UPPER_LIMIT
+  });
 
-  constructor(boardContainer, tasksModel, filterModel) {
+  constructor({boardContainer, tasksModel, filterModel, onNewTaskDestroy}) {
     this.#boardContainer = boardContainer;
     this.#tasksModel = tasksModel;
     this.#filterModel = filterModel;
 
-    this.#taskNewPresenter = new TaskNewPresenter(this.#taskListComponent.element, this.#handleViewAction);
+    this.#taskNewPresenter = new TaskNewPresenter({
+      taskListContainer: this.#taskListComponent.element,
+      onDataChange: this.#handleViewAction,
+      onDestroy: onNewTaskDestroy
+    });
 
     this.#tasksModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
@@ -68,10 +75,10 @@ export default class BoardPresenter {
     this.#renderBoard();
   }
 
-  createTask(callback) {
+  createTask() {
     this.#currentSortType = SortType.DEFAULT;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.ALL);
-    this.#taskNewPresenter.init(callback);
+    this.#taskNewPresenter.init();
   }
 
   #handleLoadMoreButtonClick = () => {
@@ -157,14 +164,20 @@ export default class BoardPresenter {
   };
 
   #renderSort() {
-    this.#sortComponent = new SortView(this.#currentSortType);
-    this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
+    this.#sortComponent = new SortView({
+      currentSortType: this.#currentSortType,
+      onSortTypeChange: this.#handleSortTypeChange
+    });
 
     render(this.#sortComponent, this.#boardComponent.element, RenderPosition.AFTERBEGIN);
   }
 
   #renderTask(task) {
-    const taskPresenter = new TaskPresenter(this.#taskListComponent.element, this.#handleViewAction, this.#handleModeChange);
+    const taskPresenter = new TaskPresenter({
+      taskListContainer: this.#taskListComponent.element,
+      onDataChange: this.#handleViewAction,
+      onModeChange: this.#handleModeChange
+    });
     taskPresenter.init(task);
     this.#taskPresenter.set(task.id, taskPresenter);
   }
@@ -178,13 +191,16 @@ export default class BoardPresenter {
   }
 
   #renderNoTasks() {
-    this.#noTaskComponent = new NoTaskView(this.#filterType);
+    this.#noTaskComponent = new NoTaskView({
+      filterType:this.#filterType
+    });
     render(this.#noTaskComponent, this.#boardComponent.element, RenderPosition.AFTERBEGIN);
   }
 
   #renderLoadMoreButton() {
-    this.#loadMoreButtonComponent = new LoadMoreButtonView();
-    this.#loadMoreButtonComponent.setClickHandler(this.#handleLoadMoreButtonClick);
+    this.#loadMoreButtonComponent = new LoadMoreButtonView({
+      onClick: this.#handleLoadMoreButtonClick
+    });
 
     render(this.#loadMoreButtonComponent, this.#boardComponent.element);
   }

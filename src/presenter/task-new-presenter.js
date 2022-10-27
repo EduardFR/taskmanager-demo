@@ -4,25 +4,25 @@ import {UserAction, UpdateType} from '../const.js';
 
 export default class TaskNewPresenter {
   #taskListContainer = null;
-  #changeData = null;
+  #onDataChange = null;
   #taskEditComponent = null;
   #destroyCallback = null;
 
-  constructor(taskListContainer, changeData) {
+  constructor({taskListContainer, onDataChange, onDestroy}) {
     this.#taskListContainer = taskListContainer;
-    this.#changeData = changeData;
+    this.#onDataChange = onDataChange;
+    this.#destroyCallback = onDestroy;
   }
 
-  init(callback) {
-    this.#destroyCallback = callback;
-
+  init() {
     if (this.#taskEditComponent !== null) {
       return;
     }
 
-    this.#taskEditComponent = new TaskEditView();
-    this.#taskEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
-    this.#taskEditComponent.setDeleteClickHandler(this.#handleDeleteClick);
+    this.#taskEditComponent = new TaskEditView({
+      onFormSubmit: this.#handleFormSubmit,
+      onDeleteClick: this.#handleDeleteClick
+    });
 
     render(this.#taskEditComponent, this.#taskListContainer, RenderPosition.AFTERBEGIN);
 
@@ -34,7 +34,7 @@ export default class TaskNewPresenter {
       return;
     }
 
-    this.#destroyCallback?.();
+    this.#destroyCallback();
 
     remove(this.#taskEditComponent);
     this.#taskEditComponent = null;
@@ -62,7 +62,7 @@ export default class TaskNewPresenter {
   }
 
   #handleFormSubmit = (task) => {
-    this.#changeData(
+    this.#onDataChange(
       UserAction.ADD_TASK,
       UpdateType.MINOR,
       task,

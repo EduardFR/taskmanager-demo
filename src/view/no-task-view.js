@@ -23,7 +23,7 @@ function createNoTaskTemplate(filterType) {
 export default class NoTaskView extends AbstractView {
   #filterType = null;
 
-  constructor(filterType) {
+  constructor({filterType}) {
     super();
     this.#filterType = filterType;
   }

@@ -10,7 +10,7 @@ export default class FilterPresenter {
 
   #filterComponent = null;
 
-  constructor(filterContainer, filterModel, tasksModel) {
+  constructor({filterContainer, filterModel, tasksModel}) {
     this.#filterContainer = filterContainer;
     this.#filterModel = filterModel;
     this.#tasksModel = tasksModel;
@@ -60,8 +60,11 @@ export default class FilterPresenter {
     const filters = this.filters;
     const prevFilterComponent = this.#filterComponent;
 
-    this.#filterComponent = new FilterView(filters, this.#filterModel.filter);
-    this.#filterComponent.setFilterTypeChangeHandler(this.#handleFilterTypeChange);
+    this.#filterComponent = new FilterView({
+      filters,
+      currentFilterType: this.#filterModel.filter,
+      onFilterTypeChange: this.#handleFilterTypeChange
+    });
 
     if (prevFilterComponent === null) {
       render(this.#filterComponent, this.#filterContainer);

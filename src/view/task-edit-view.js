@@ -166,12 +166,12 @@ function createTaskEditTemplate(data) {
 export default class TaskEditView extends AbstractStatefulView {
   #datepicker = null;
 
-  constructor(task = BLANK_TASK) {
+  constructor({task = BLANK_TASK, onFormSubmit, onDeleteClick}) {
     super();
     this._setState(TaskEditView.parseTaskToState(task));
-
-    this.#setInnerHandlers();
-    this.#setDatepicker();
+    this._callback.formSubmit = onFormSubmit;
+    this._callback.deleteClick = onDeleteClick;
+    this._restoreHandlers();
   }
 
   get template() {
@@ -195,21 +195,26 @@ export default class TaskEditView extends AbstractStatefulView {
     );
   }
 
-  setFormSubmitHandler(callback) {
-    this._callback.formSubmit = callback;
-    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
-  }
-
-  setDeleteClickHandler(callback) {
-    this._callback.deleteClick = callback;
-    this.element.querySelector('.card__delete').addEventListener('click', this.#formDeleteClickHandler);
-  }
-
   _restoreHandlers() {
-    this.#setInnerHandlers();
+    this.element.querySelector('.card__date-deadline-toggle')
+      .addEventListener('click', this.#dueDateToggleHandler);
+    this.element.querySelector('.card__repeat-toggle')
+      .addEventListener('click', this.#repeatingToggleHandler);
+    this.element.querySelector('.card__text')
+      .addEventListener('input', this.#descriptionInputHandler);
+    this.element.querySelector('.card__colors-wrap')
+      .addEventListener('change', this.#colorChangeHandler);
+    this.element.querySelector('form')
+      .addEventListener('submit', this.#formSubmitHandler);
+    this.element.querySelector('.card__delete')
+      .addEventListener('click', this.#formDeleteClickHandler);
+
+    if (this._state.isRepeating) {
+      this.element.querySelector('.card__repeat-days-inner')
+        .addEventListener('change', this.#repeatingChangeHandler);
+    }
+
     this.#setDatepicker();
-    this.setFormSubmitHandler(this._callback.formSubmit);
-    this.setDeleteClickHandler(this._callback.deleteClick);
   }
 
   #colorChangeHandler = (evt) => {
@@ -277,23 +282,6 @@ export default class TaskEditView extends AbstractStatefulView {
         },
       );
     }
-  }
-
-  #setInnerHandlers() {
-    this.element.querySelector('.card__date-deadline-toggle')
-      .addEventListener('click', this.#dueDateToggleHandler);
-    this.element.querySelector('.card__repeat-toggle')
-      .addEventListener('click', this.#repeatingToggleHandler);
-    this.element.querySelector('.card__text')
-      .addEventListener('input', this.#descriptionInputHandler);
-
-    if (this._state.isRepeating) {
-      this.element.querySelector('.card__repeat-days-inner')
-        .addEventListener('change', this.#repeatingChangeHandler);
-    }
-
-    this.element.querySelector('.card__colors-wrap')
-      .addEventListener('change', this.#colorChangeHandler);
   }
 
   #formDeleteClickHandler = (evt) => {

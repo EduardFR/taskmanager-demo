@@ -12,18 +12,31 @@ const END_POINT = 'https://18.ecmascript.pages.academy/task-manager';
 const siteMainElement = document.querySelector('.main');
 const siteHeaderElement = siteMainElement.querySelector('.main__control');
 
-const tasksModel = new TasksModel(new TasksApiService(END_POINT, AUTHORIZATION));
+const tasksModel = new TasksModel({
+  tasksApiService: new TasksApiService(END_POINT, AUTHORIZATION)
+});
 const filterModel = new FilterModel();
-const boardPresenter = new BoardPresenter(siteMainElement, tasksModel, filterModel);
-const filterPresenter = new FilterPresenter(siteMainElement, filterModel, tasksModel);
-const newTaskButtonComponent = new NewTaskButtonView();
+const boardPresenter = new BoardPresenter({
+  boardContainer: siteMainElement,
+  tasksModel,
+  filterModel,
+  onNewTaskDestroy: handleNewTaskFormClose
+});
+const filterPresenter = new FilterPresenter({
+  filterContainer: siteMainElement,
+  filterModel,
+  tasksModel
+});
+const newTaskButtonComponent = new NewTaskButtonView({
+  onClick: handleNewTaskButtonClick
+});
 
 function handleNewTaskFormClose() {
   newTaskButtonComponent.element.disabled = false;
 }
 
 function handleNewTaskButtonClick() {
-  boardPresenter.createTask(handleNewTaskFormClose);
+  boardPresenter.createTask();
   newTaskButtonComponent.element.disabled = true;
 }
 
@@ -32,5 +45,4 @@ boardPresenter.init();
 tasksModel.init()
   .finally(() => {
     render(newTaskButtonComponent, siteHeaderElement);
-    newTaskButtonComponent.setClickHandler(handleNewTaskButtonClick);
   });

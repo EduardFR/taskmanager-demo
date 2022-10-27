@@ -5,13 +5,14 @@ function createNewTaskButtonTemplate() {
 }
 
 export default class NewTaskButtonView extends AbstractView {
-  get template() {
-    return createNewTaskButtonTemplate();
+  constructor({onClick}) {
+    super();
+    this._callback.click = onClick;
+    this.element.addEventListener('click', this.#clickHandler);
   }
 
-  setClickHandler(callback) {
-    this._callback.click = callback;
-    this.element.addEventListener('click', this.#clickHandler);
+  get template() {
+    return createNewTaskButtonTemplate();
   }
 
   #clickHandler = (evt) => {
