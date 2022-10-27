@@ -12,10 +12,14 @@ const tasksModel = new TasksModel({
   tasksApiService: new TasksApiService()
 });
 const boardPresenter = new BoardPresenter({
-  boardContainer: siteMainElement
+  boardContainer: siteMainElement,
+  tasksModel
 });
 
 render(new NewTaskButtonView(), siteHeaderElement);
 render(new FilterView(), siteMainElement);
 
-boardPresenter.init();
+tasksModel.init()
+  .then(() => {
+    boardPresenter.init();
+  });
