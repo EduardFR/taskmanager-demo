@@ -6,6 +6,7 @@ import LoadMoreButtonView from '../view/load-more-button-view.js';
 import LoadingView from '../view/loading-view.js';
 import NoTaskView from '../view/no-task-view.js';
 import TaskPresenter from './task-presenter.js';
+import {SortType} from '../const.js';
 
 const TASK_COUNT_PER_STEP = 8;
 
@@ -25,6 +26,7 @@ export default class BoardPresenter {
   #filterType = null;
   #renderedTaskCount = TASK_COUNT_PER_STEP;
   #taskPresenter = new Map();
+  #currentSortType = SortType.DEFAULT;
 
   constructor({boardContainer, tasksModel, filterModel}) {
     this.#boardContainer = boardContainer;
@@ -99,8 +101,10 @@ export default class BoardPresenter {
   }
 
   #renderSort() {
-    this.#sortComponent = new SortView();
-    render(this.#sortComponent, this.#boardComponent.element);
+    this.#sortComponent = new SortView({
+      currentSortType: this.#currentSortType,
+    });
+    render(this.#sortComponent, this.#boardComponent.element, RenderPosition.AFTERBEGIN);
   }
 
   #renderTask(task) {

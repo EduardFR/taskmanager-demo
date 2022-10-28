@@ -13,4 +13,10 @@ const UpdateType = {
   INIT: 'INIT',
 };
 
-export {COLORS, FilterType, UpdateType};
+const SortType = {
+  DEFAULT: 'default',
+  DATE_DOWN: 'date-down',
+  DATE_UP: 'date-up',
+};
+
+export {COLORS, FilterType, UpdateType, SortType};
