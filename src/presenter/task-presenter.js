@@ -25,6 +25,13 @@ export default class TaskPresenter {
     render(this.#taskComponent, this.#taskListContainer);
   }
 
+  #escKeyDownHandler = (evt) => {
+    if (evt.key === 'Escape') {
+      evt.preventDefault();
+      this.#replaceFormToCard();
+    }
+  };
+
   #handleEditClick = () => {
     this.#replaceCardToForm();
   };
@@ -35,9 +42,11 @@ export default class TaskPresenter {
 
   #replaceCardToForm = () => {
     replace(this.#taskEditComponent, this.#taskComponent);
+    document.addEventListener('keydown', this.#escKeyDownHandler);
   };
 
   #replaceFormToCard = () => {
     replace(this.#taskComponent, this.#taskEditComponent);
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
 }
