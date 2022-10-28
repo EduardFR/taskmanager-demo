@@ -78,10 +78,8 @@ export default class BoardPresenter {
     render(taskComponent, this.#taskListComponent.element);
   }
 
-  #renderTasks() {
-    for (let i = 0; i < this.tasks.length; i++) {
-      this.#renderTask(this.tasks[i]);
-    }
+  #renderTasks(tasks) {
+    tasks.forEach((task) => this.#renderTask(task));
   }
 
   #renderBoard() {
@@ -92,7 +90,8 @@ export default class BoardPresenter {
       return;
     }
 
-    const taskCount = this.tasks.length;
+    const tasks = this.tasks;
+    const taskCount = tasks.length;
 
     if (taskCount === 0) {
       this.#renderNoTasks();
@@ -101,7 +100,7 @@ export default class BoardPresenter {
 
     this.#renderSort();
     render(this.#taskListComponent, this.#boardComponent.element);
-    this.#renderTasks();
+    this.#renderTasks(tasks);
 
     if (taskCount > TASK_COUNT_PER_STEP) {
       this.#renderLoadMoreButton();
