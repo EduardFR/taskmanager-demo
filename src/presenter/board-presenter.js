@@ -8,6 +8,7 @@ import NoTaskView from '../view/no-task-view.js';
 import TaskPresenter from './task-presenter.js';
 import {SortType, UserAction, UpdateType} from '../const.js';
 import {sortTaskUp, sortTaskDown} from '../utils/task.js';
+import {filter} from '../utils/filter.js';
 
 const TASK_COUNT_PER_STEP = 8;
 
@@ -34,23 +35,23 @@ export default class BoardPresenter {
     this.#tasksModel = tasksModel;
     this.#filterModel = filterModel;
 
-    this.#filterType = this.#filterModel.getFilter();
-
     this.#tasksModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get tasks() {
+    this.#filterType = this.#filterModel.getFilter();
     const tasks = structuredClone(this.#tasksModel.getTasks());
+    const filteredTasks = filter[this.#filterType](tasks);
 
     switch (this.#currentSortType) {
       case SortType.DATE_UP:
-        return tasks.sort(sortTaskUp);
+        return filteredTasks.sort(sortTaskUp);
       case SortType.DATE_DOWN:
-        return tasks.sort(sortTaskDown);
+        return filteredTasks.sort(sortTaskDown);
     }
 
-    return tasks;
+    return filteredTasks;
   }
 
   init() {
