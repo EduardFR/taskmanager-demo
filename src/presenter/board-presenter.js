@@ -19,10 +19,12 @@ export default class BoardPresenter {
   #loadingComponent = new LoadingView();
   #noTaskComponent = null;
   #loadMoreButtonComponent = null;
+  #sortComponent = null;
 
   #isLoading = true;
   #filterType = null;
   #renderedTaskCount = TASK_COUNT_PER_STEP;
+  #taskPresenter = new Map();
 
   constructor({boardContainer, tasksModel, filterModel}) {
     this.#boardContainer = boardContainer;
@@ -41,6 +43,20 @@ export default class BoardPresenter {
 
   init() {
     this.#renderBoard();
+  }
+
+  #clearBoard() {
+    this.#taskPresenter.forEach((presenter) => presenter.destroy());
+    this.#taskPresenter.clear();
+    this.#renderedTaskCount = TASK_COUNT_PER_STEP;
+
+    remove(this.#sortComponent);
+    remove(this.#loadingComponent);
+    remove(this.#loadMoreButtonComponent);
+
+    if (this.#noTaskComponent) {
+      remove(this.#noTaskComponent);
+    }
   }
 
   #handleModelEvent = () => {
@@ -83,7 +99,8 @@ export default class BoardPresenter {
   }
 
   #renderSort() {
-    render(new SortView(), this.#boardComponent.element);
+    this.#sortComponent = new SortView();
+    render(this.#sortComponent, this.#boardComponent.element);
   }
 
   #renderTask(task) {
@@ -92,6 +109,7 @@ export default class BoardPresenter {
       onModeChange: this.#handleModeChange
     });
     taskPresenter.init(task);
+    this.#taskPresenter.set(task.id, taskPresenter);
   }
 
   #renderTasks(tasks) {
