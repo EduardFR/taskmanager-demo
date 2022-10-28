@@ -143,12 +143,21 @@ function createTaskEditTemplate(data) {
 export default class TaskEditView extends AbstractView {
   #task = null;
 
-  constructor({task = BLANK_TASK}) {
+  constructor({task = BLANK_TASK, onFormSubmit}) {
     super();
     this.#task = task;
+    this._callback.formSubmit = onFormSubmit;
+
+    this.element.querySelector('form')
+      .addEventListener('submit', this.#formSubmitHandler);
   }
 
   get template() {
     return createTaskEditTemplate(this.#task);
   }
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.formSubmit(this.#task);
+  };
 }
