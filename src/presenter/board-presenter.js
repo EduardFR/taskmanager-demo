@@ -6,7 +6,7 @@ import LoadMoreButtonView from '../view/load-more-button-view.js';
 import LoadingView from '../view/loading-view.js';
 import NoTaskView from '../view/no-task-view.js';
 import TaskPresenter from './task-presenter.js';
-import {SortType, UserAction} from '../const.js';
+import {SortType, UserAction, UpdateType} from '../const.js';
 import {sortTaskUp, sortTaskDown} from '../utils/task.js';
 
 const TASK_COUNT_PER_STEP = 8;
@@ -57,10 +57,9 @@ export default class BoardPresenter {
     this.#renderBoard();
   }
 
-  #clearBoard() {
+  #clearBoard({resetRenderedTaskCount = false, resetSortType = false} = {}) {
     this.#taskPresenter.forEach((presenter) => presenter.destroy());
     this.#taskPresenter.clear();
-    this.#renderedTaskCount = TASK_COUNT_PER_STEP;
 
     remove(this.#sortComponent);
     remove(this.#loadingComponent);
@@ -69,12 +68,38 @@ export default class BoardPresenter {
     if (this.#noTaskComponent) {
       remove(this.#noTaskComponent);
     }
+
+    if (resetRenderedTaskCount) {
+      this.#renderedTaskCount = TASK_COUNT_PER_STEP;
+    } else {
+      this.#renderedTaskCount = Math.min(this.tasks.length, this.#renderedTaskCount);
+    }
+
+    if (resetSortType) {
+      this.#currentSortType = SortType.DEFAULT;
+    }
   }
 
-  #handleModelEvent = () => {
-    this.#isLoading = false;
-    remove(this.#loadingComponent);
-    this.init();
+  #handleModelEvent = (updateType, data) => {
+    switch (updateType) {
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.init();
+        break;
+      case UpdateType.PATCH:
+        this.#taskPresenter.get(data.id).init(data);
+        break;
+      case UpdateType.MINOR:
+        this.#clearBoard();
+        this.#renderBoard();
+        break;
+      case UpdateType.MAJOR:
+        this.#clearBoard({resetRenderedTaskCount: true, resetSortType: true});
+        this.#renderBoard();
+        break;
+    }
+
   };
 
   #handleViewAction = (actionType, updateType, update) => {
@@ -113,7 +138,7 @@ export default class BoardPresenter {
     }
 
     this.#currentSortType = sortType;
-    this.#clearBoard();
+    this.#clearBoard({resetRenderedTaskCount: true});
     this.#renderBoard();
   };
 

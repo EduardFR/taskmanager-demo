@@ -11,6 +11,9 @@ const FilterType = {
 
 const UpdateType = {
   INIT: 'INIT',
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
 };
 
 const SortType = {
