@@ -95,7 +95,7 @@ function createTaskEditTemplate(data) {
 
   const colorsTemplate = createTaskEditColorsTemplate(color);
 
-  const isSubmitDisabled = isRepeating && !isTaskRepeating(repeating);
+  const isSubmitDisabled = (isDueDate && dueDate === null) || (isRepeating && !isTaskRepeating(repeating));
 
   return (
     `<article class="card card--edit card--${color} ${repeatingClassName}">
@@ -145,6 +145,8 @@ function createTaskEditTemplate(data) {
 }
 
 export default class TaskEditView extends AbstractStatefulView {
+  #datepicker = null;
+
   constructor({task = BLANK_TASK, onFormSubmit}) {
     super();
     this._setState(this.#parseTaskToState(task));
@@ -155,6 +157,15 @@ export default class TaskEditView extends AbstractStatefulView {
 
   get template() {
     return createTaskEditTemplate(this._state);
+  }
+
+  removeElement() {
+    super.removeElement();
+
+    if (this.#datepicker) {
+      this.#datepicker.destroy();
+      this.#datepicker = null;
+    }
   }
 
   _restoreHandlers() {
@@ -173,6 +184,8 @@ export default class TaskEditView extends AbstractStatefulView {
       this.element.querySelector('.card__repeat-days-inner')
         .addEventListener('change', this.#repeatingChangeHandler);
     }
+
+    this.#setDatepicker();
   }
 
   #colorChangeHandler = (evt) => {
@@ -186,6 +199,12 @@ export default class TaskEditView extends AbstractStatefulView {
     evt.preventDefault();
     this._setState({
       description: evt.target.value,
+    });
+  };
+
+  #dueDateChangeHandler = ([userDate]) => {
+    this.updateElement({
+      dueDate: userDate,
     });
   };
 
@@ -247,5 +266,18 @@ export default class TaskEditView extends AbstractStatefulView {
     delete task.isRepeating;
 
     return task;
+  }
+
+  #setDatepicker() {
+    if (this._state.isDueDate) {
+      this.#datepicker = flatpickr(
+        this.element.querySelector('.card__date'),
+        {
+          dateFormat: 'j F',
+          defaultDate: this._state.dueDate,
+          onChange: this.#dueDateChangeHandler,
+        },
+      );
+    }
   }
 }
