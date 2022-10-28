@@ -84,6 +84,14 @@ export default class BoardPresenter {
     this.#taskPresenter.forEach((presenter) => presenter.resetView());
   };
 
+  #handleSortTypeChange = (sortType) => {
+    if (this.#currentSortType === sortType) {
+      return;
+    }
+
+    this.#currentSortType = sortType;
+  };
+
   #renderLoading() {
     render(this.#loadingComponent, this.#boardComponent.element, RenderPosition.AFTERBEGIN);
   }
@@ -103,6 +111,7 @@ export default class BoardPresenter {
   #renderSort() {
     this.#sortComponent = new SortView({
       currentSortType: this.#currentSortType,
+      onSortTypeChange: this.#handleSortTypeChange
     });
     render(this.#sortComponent, this.#boardComponent.element, RenderPosition.AFTERBEGIN);
   }
