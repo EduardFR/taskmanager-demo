@@ -4,14 +4,20 @@ import {filter} from '../utils/filter.js';
 import {FilterType} from '../const.js';
 
 export default class FilterPresenter {
+  #filterContainer = null;
+  #filterModel = null;
+  #tasksModel = null;
+
+  #filterComponent = null;
+
   constructor({filterContainer, filterModel, tasksModel}) {
-    this.filterContainer = filterContainer;
-    this.filterModel = filterModel;
-    this.tasksModel = tasksModel;
+    this.#filterContainer = filterContainer;
+    this.#filterModel = filterModel;
+    this.#tasksModel = tasksModel;
   }
 
-  getFilters() {
-    const tasks = this.tasksModel.getTasks();
+  get filters() {
+    const tasks = this.#tasksModel.getTasks();
 
     return [
       {
@@ -48,10 +54,10 @@ export default class FilterPresenter {
   }
 
   init() {
-    this.filterComponent = new FilterView({
-      filters: this.getFilters(),
-      currentFilterType: this.filterModel.getFilter(),
+    this.#filterComponent = new FilterView({
+      filters: this.filters,
+      currentFilterType: this.#filterModel.getFilter(),
     });
-    render(this.filterComponent, this.filterContainer);
+    render(this.#filterComponent, this.#filterContainer);
   }
 }

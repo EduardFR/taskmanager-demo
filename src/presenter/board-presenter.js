@@ -7,24 +7,31 @@ import TaskEditView from '../view/task-edit-view.js';
 import LoadMoreButtonView from '../view/load-more-button-view.js';
 
 export default class BoardPresenter {
-  boardComponent = new BoardView();
-  taskListComponent = new TaskListView();
+  #boardContainer = null;
+  #tasksModel = null;
+
+  #boardComponent = new BoardView();
+  #taskListComponent = new TaskListView();
 
   constructor({boardContainer, tasksModel}) {
-    this.boardContainer = boardContainer;
-    this.tasksModel = tasksModel;
+    this.#boardContainer = boardContainer;
+    this.#tasksModel = tasksModel;
+  }
+
+  get tasks() {
+    return this.#tasksModel.getTasks();
   }
 
   init() {
-    render(this.boardComponent, this.boardContainer);
-    render(new SortView(), this.boardComponent.element);
-    render(this.taskListComponent, this.boardComponent.element);
-    render(new TaskEditView({task: this.tasksModel.getTasks()[0]}), this.taskListComponent.element);
+    render(this.#boardComponent, this.#boardContainer);
+    render(new SortView(), this.#boardComponent.element);
+    render(this.#taskListComponent, this.#boardComponent.element);
+    render(new TaskEditView({task: this.tasks[0]}), this.#taskListComponent.element);
 
-    for (let i = 1; i < this.tasksModel.getTasks().length; i++) {
-      render(new TaskView({task: this.tasksModel.getTasks()[i]}), this.taskListComponent.element);
+    for (let i = 1; i < this.tasks.length; i++) {
+      render(new TaskView({task: this.tasks[i]}), this.#taskListComponent.element);
     }
 
-    render(new LoadMoreButtonView(), this.boardComponent.element);
+    render(new LoadMoreButtonView(), this.#boardComponent.element);
   }
 }
