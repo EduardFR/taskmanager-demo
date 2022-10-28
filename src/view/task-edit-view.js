@@ -164,6 +164,8 @@ export default class TaskEditView extends AbstractStatefulView {
       .addEventListener('click', this.#repeatingToggleHandler);
     this.element.querySelector('.card__colors-wrap')
       .addEventListener('change', this.#colorChangeHandler);
+    this.element.querySelector('.card__text')
+      .addEventListener('input', this.#descriptionInputHandler);
 
     if (this._state.isRepeating) {
       this.element.querySelector('.card__repeat-days-inner')
@@ -175,6 +177,13 @@ export default class TaskEditView extends AbstractStatefulView {
     evt.preventDefault();
     this.updateElement({
       color: evt.target.value,
+    });
+  };
+
+  #descriptionInputHandler = (evt) => {
+    evt.preventDefault();
+    this._setState({
+      description: evt.target.value,
     });
   };
 
