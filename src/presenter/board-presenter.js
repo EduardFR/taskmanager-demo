@@ -8,6 +8,8 @@ import LoadMoreButtonView from '../view/load-more-button-view.js';
 import LoadingView from '../view/loading-view.js';
 import NoTaskView from '../view/no-task-view.js';
 
+const TASK_COUNT_PER_STEP = 8;
+
 export default class BoardPresenter {
   #boardContainer = null;
   #tasksModel = null;
@@ -17,6 +19,7 @@ export default class BoardPresenter {
   #taskListComponent = new TaskListView();
   #loadingComponent = new LoadingView();
   #noTaskComponent = null;
+  #loadMoreButtonComponent = null;
 
   #isLoading = true;
   #filterType = null;
@@ -46,12 +49,19 @@ export default class BoardPresenter {
     this.init();
   };
 
+  #handleLoadMoreButtonClick = () => {
+    alert('Works!');
+  };
+
   #renderLoading() {
     render(this.#loadingComponent, this.#boardComponent.element, RenderPosition.AFTERBEGIN);
   }
 
   #renderLoadMoreButton() {
-    render(new LoadMoreButtonView(), this.#boardComponent.element);
+    this.#loadMoreButtonComponent = new LoadMoreButtonView({
+      onClick: this.#handleLoadMoreButtonClick,
+    });
+    render(this.#loadMoreButtonComponent, this.#boardComponent.element);
   }
 
   #renderNoTasks() {
@@ -82,7 +92,9 @@ export default class BoardPresenter {
       return;
     }
 
-    if (this.tasks.length === 0) {
+    const taskCount = this.tasks.length;
+
+    if (taskCount === 0) {
       this.#renderNoTasks();
       return;
     }
@@ -90,6 +102,9 @@ export default class BoardPresenter {
     this.#renderSort();
     render(this.#taskListComponent, this.#boardComponent.element);
     this.#renderTasks();
-    this.#renderLoadMoreButton();
+
+    if (taskCount > TASK_COUNT_PER_STEP) {
+      this.#renderLoadMoreButton();
+    }
   }
 }
