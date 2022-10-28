@@ -146,12 +146,16 @@ export default class TaskEditView extends AbstractStatefulView {
     this._setState(this.#parseTaskToState(task));
     this._callback.formSubmit = onFormSubmit;
 
-    this.element.querySelector('form')
-      .addEventListener('submit', this.#formSubmitHandler);
+    this._restoreHandlers();
   }
 
   get template() {
     return createTaskEditTemplate(this._state);
+  }
+
+  _restoreHandlers() {
+    this.element.querySelector('form')
+      .addEventListener('submit', this.#formSubmitHandler);
   }
 
   #formSubmitHandler = (evt) => {
