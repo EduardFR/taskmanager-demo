@@ -1,8 +1,10 @@
-export default class TasksModel {
+import Observable from '../framework/observable.js';
+export default class TasksModel extends Observable {
   #tasksApiService = null;
   #tasks = [];
 
   constructor({tasksApiService}) {
+    super();
     this.#tasksApiService = tasksApiService;
   }
 
