@@ -23,6 +23,7 @@ export default class BoardPresenter {
 
   #isLoading = true;
   #filterType = null;
+  #renderedTaskCount = TASK_COUNT_PER_STEP;
 
   constructor({boardContainer, tasksModel, filterModel}) {
     this.#boardContainer = boardContainer;
@@ -50,7 +51,16 @@ export default class BoardPresenter {
   };
 
   #handleLoadMoreButtonClick = () => {
-    alert('Works!');
+    const taskCount = this.tasks.length;
+    const newRenderedTaskCount = Math.min(taskCount, this.#renderedTaskCount + TASK_COUNT_PER_STEP);
+    const tasks = this.tasks.slice(this.#renderedTaskCount, newRenderedTaskCount);
+
+    this.#renderTasks(tasks);
+    this.#renderedTaskCount = newRenderedTaskCount;
+
+    if (this.#renderedTaskCount >= taskCount) {
+      remove(this.#loadMoreButtonComponent);
+    }
   };
 
   #renderLoading() {
@@ -100,9 +110,9 @@ export default class BoardPresenter {
 
     this.#renderSort();
     render(this.#taskListComponent, this.#boardComponent.element);
-    this.#renderTasks(tasks);
+    this.#renderTasks(tasks.slice(0, Math.min(taskCount, this.#renderedTaskCount)));
 
-    if (taskCount > TASK_COUNT_PER_STEP) {
+    if (taskCount > this.#renderedTaskCount) {
       this.#renderLoadMoreButton();
     }
   }
