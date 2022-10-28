@@ -7,6 +7,7 @@ import LoadingView from '../view/loading-view.js';
 import NoTaskView from '../view/no-task-view.js';
 import TaskPresenter from './task-presenter.js';
 import {SortType} from '../const.js';
+import {sortTaskUp, sortTaskDown} from '../utils/task.js';
 
 const TASK_COUNT_PER_STEP = 8;
 
@@ -40,7 +41,16 @@ export default class BoardPresenter {
   }
 
   get tasks() {
-    return this.#tasksModel.getTasks();
+    const tasks = structuredClone(this.#tasksModel.getTasks());
+
+    switch (this.#currentSortType) {
+      case SortType.DATE_UP:
+        return tasks.sort(sortTaskUp);
+      case SortType.DATE_DOWN:
+        return tasks.sort(sortTaskDown);
+    }
+
+    return tasks;
   }
 
   init() {
@@ -90,6 +100,8 @@ export default class BoardPresenter {
     }
 
     this.#currentSortType = sortType;
+    this.#clearBoard();
+    this.#renderBoard();
   };
 
   #renderLoading() {
