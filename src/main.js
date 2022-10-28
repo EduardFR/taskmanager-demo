@@ -15,7 +15,8 @@ const tasksModel = new TasksModel({
 const filterModel = new FilterModel();
 const boardPresenter = new BoardPresenter({
   boardContainer: siteMainElement,
-  tasksModel
+  tasksModel,
+  filterModel
 });
 const filterPresenter = new FilterPresenter({
   filterContainer: siteMainElement,

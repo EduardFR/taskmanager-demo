@@ -6,22 +6,30 @@ import TaskView from '../view/task-view.js';
 import TaskEditView from '../view/task-edit-view.js';
 import LoadMoreButtonView from '../view/load-more-button-view.js';
 import LoadingView from '../view/loading-view.js';
+import NoTaskView from '../view/no-task-view.js';
 
 export default class BoardPresenter {
   #boardContainer = null;
   #tasksModel = null;
+  #filterModel = null;
 
   #boardComponent = new BoardView();
   #taskListComponent = new TaskListView();
   #loadingComponent = new LoadingView();
+  #noTaskComponent = null;
 
   #isLoading = true;
+  #filterType = null;
 
-  constructor({boardContainer, tasksModel}) {
+  constructor({boardContainer, tasksModel, filterModel}) {
     this.#boardContainer = boardContainer;
     this.#tasksModel = tasksModel;
+    this.#filterModel = filterModel;
+
+    this.#filterType = this.#filterModel.getFilter();
 
     this.#tasksModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get tasks() {
@@ -46,6 +54,11 @@ export default class BoardPresenter {
     render(new LoadMoreButtonView(), this.#boardComponent.element);
   }
 
+  #renderNoTasks() {
+    this.#noTaskComponent = new NoTaskView(this.#filterType);
+    render(this.#noTaskComponent, this.#boardComponent.element, RenderPosition.AFTERBEGIN);
+  }
+
   #renderSort() {
     render(new SortView(), this.#boardComponent.element);
   }
@@ -63,6 +76,11 @@ export default class BoardPresenter {
 
     if (this.#isLoading) {
       this.#renderLoading();
+      return;
+    }
+
+    if (this.tasks.length === 0) {
+      this.#renderNoTasks();
       return;
     }
 
