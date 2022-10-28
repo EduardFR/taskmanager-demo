@@ -1,5 +1,5 @@
+import {render} from '../framework/render.js';
 import FilterView from '../view/filter-view.js';
-import {render} from '../render.js';
 import {filter} from '../utils/filter.js';
 import {FilterType} from '../const.js';
 

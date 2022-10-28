@@ -2,7 +2,7 @@ import TasksApiService from './mock/tasks-api-service.js';
 import TasksModel from './model/tasks-model.js';
 import FilterModel from './model/filter-model.js';
 import NewTaskButtonView from './view/new-task-button-view.js';
-import {render} from './render.js';
+import {render} from './framework/render.js';
 import BoardPresenter from './presenter/board-presenter.js';
 import FilterPresenter from './presenter/filter-presenter.js';
 
