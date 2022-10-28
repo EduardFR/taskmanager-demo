@@ -9,4 +9,8 @@ const FilterType = {
   ARCHIVE: 'archive',
 };
 
-export {COLORS, FilterType};
+const UpdateType = {
+  INIT: 'INIT',
+};
+
+export {COLORS, FilterType, UpdateType};
