@@ -1,4 +1,4 @@
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {COLORS} from '../const.js';
 import {humanizeTaskDueDate, isTaskRepeating} from '../utils/task.js';
 
@@ -140,12 +140,10 @@ function createTaskEditTemplate(data) {
   );
 }
 
-export default class TaskEditView extends AbstractView {
-  #task = null;
-
+export default class TaskEditView extends AbstractStatefulView {
   constructor({task = BLANK_TASK, onFormSubmit}) {
     super();
-    this.#task = task;
+    this._setState(this.#parseTaskToState(task));
     this._callback.formSubmit = onFormSubmit;
 
     this.element.querySelector('form')
@@ -153,11 +151,19 @@ export default class TaskEditView extends AbstractView {
   }
 
   get template() {
-    return createTaskEditTemplate(this.#task);
+    return createTaskEditTemplate(this._state);
   }
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this._callback.formSubmit(this.#task);
+    this._callback.formSubmit(this.#parseStateToTask(this._state));
   };
+
+  #parseTaskToState(task) {
+    return {...task};
+  }
+
+  #parseStateToTask(state) {
+    return {...state};
+  }
 }
