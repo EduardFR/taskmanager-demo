@@ -1,4 +1,4 @@
-import {render, RenderPosition} from '../framework/render.js';
+import {render, remove, RenderPosition} from '../framework/render.js';
 import BoardView from '../view/board-view.js';
 import SortView from '../view/sort-view.js';
 import TaskListView from '../view/task-list-view.js';
@@ -20,6 +20,8 @@ export default class BoardPresenter {
   constructor({boardContainer, tasksModel}) {
     this.#boardContainer = boardContainer;
     this.#tasksModel = tasksModel;
+
+    this.#tasksModel.addObserver(this.#handleModelEvent);
   }
 
   get tasks() {
@@ -44,4 +46,10 @@ export default class BoardPresenter {
 
     render(new LoadMoreButtonView(), this.#boardComponent.element);
   }
+
+  #handleModelEvent = () => {
+    this.#isLoading = false;
+    remove(this.#loadingComponent);
+    this.init();
+  };
 }

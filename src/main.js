@@ -25,8 +25,6 @@ const filterPresenter = new FilterPresenter({
 
 render(new NewTaskButtonView(), siteHeaderElement);
 
-tasksModel.init()
-  .then(() => {
-    filterPresenter.init();
-    boardPresenter.init();
-  });
+filterPresenter.init();
+boardPresenter.init();
+tasksModel.init();

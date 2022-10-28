@@ -14,6 +14,8 @@ export default class FilterPresenter {
     this.#filterContainer = filterContainer;
     this.#filterModel = filterModel;
     this.#tasksModel = tasksModel;
+
+    this.#tasksModel.addObserver(this.#handleModelEvent);
   }
 
   get filters() {
@@ -60,4 +62,8 @@ export default class FilterPresenter {
     });
     render(this.#filterComponent, this.#filterContainer);
   }
+
+  #handleModelEvent = () => {
+    this.init();
+  };
 }
