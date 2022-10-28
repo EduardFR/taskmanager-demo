@@ -19,13 +19,13 @@ const BLANK_TASK = {
   isFavorite: false,
 };
 
-function createTaskEditDateTemplate(dueDate) {
+function createTaskEditDateTemplate(dueDate, isDueDate) {
   return (
     `<button class="card__date-deadline-toggle" type="button">
-      date: <span class="card__date-status">${dueDate !== null ? 'yes' : 'no'}</span>
+      date: <span class="card__date-status">${isDueDate ? 'yes' : 'no'}</span>
     </button>
 
-    ${dueDate !== null ? `<fieldset class="card__date-deadline">
+    ${isDueDate ? `<fieldset class="card__date-deadline">
       <label class="card__input-deadline-wrap">
         <input
           class="card__date"
@@ -40,13 +40,13 @@ function createTaskEditDateTemplate(dueDate) {
   );
 }
 
-function createTaskEditRepeatingTemplate(repeating) {
+function createTaskEditRepeatingTemplate(repeating, isRepeating) {
   return (
     `<button class="card__repeat-toggle" type="button">
-      repeat:<span class="card__repeat-status">${isTaskRepeating(repeating) ? 'yes' : 'no'}</span>
+      repeat:<span class="card__repeat-status">${isRepeating ? 'yes' : 'no'}</span>
     </button>
 
-  ${isTaskRepeating(repeating) ? `<fieldset class="card__repeat-days">
+  ${isRepeating ? `<fieldset class="card__repeat-days">
     <div class="card__repeat-days-inner">
       ${Object.entries(repeating).map(([day, repeat]) => `<input
         class="visually-hidden card__repeat-day-input"
@@ -81,15 +81,15 @@ function createTaskEditColorsTemplate(currentColor) {
 }
 
 function createTaskEditTemplate(data) {
-  const {color, description, dueDate, repeating} = data;
+  const {color, description, dueDate, repeating, isDueDate, isRepeating} = data;
 
-  const dateTemplate = createTaskEditDateTemplate(dueDate);
+  const dateTemplate = createTaskEditDateTemplate(dueDate, isDueDate);
 
-  const repeatingClassName = isTaskRepeating(repeating)
+  const repeatingClassName = isRepeating
     ? 'card--repeat'
     : '';
 
-  const repeatingTemplate = createTaskEditRepeatingTemplate(repeating);
+  const repeatingTemplate = createTaskEditRepeatingTemplate(repeating, isRepeating);
 
   const colorsTemplate = createTaskEditColorsTemplate(color);
 
@@ -160,10 +160,34 @@ export default class TaskEditView extends AbstractStatefulView {
   };
 
   #parseTaskToState(task) {
-    return {...task};
+    return {...task,
+      isDueDate: task.dueDate !== null,
+      isRepeating: isTaskRepeating(task.repeating),
+    };
   }
 
   #parseStateToTask(state) {
-    return {...state};
+    const task = {...state};
+
+    if (!task.isDueDate) {
+      task.dueDate = null;
+    }
+
+    if (!task.isRepeating) {
+      task.repeating = {
+        mo: false,
+        tu: false,
+        we: false,
+        th: false,
+        fr: false,
+        sa: false,
+        su: false,
+      };
+    }
+
+    delete task.isDueDate;
+    delete task.isRepeating;
+
+    return task;
   }
 }
