@@ -1,6 +1,7 @@
 import {render, replace, remove} from '../framework/render.js';
 import TaskView from '../view/task-view.js';
 import TaskEditView from '../view/task-edit-view.js';
+import {UserAction, UpdateType} from '../const.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -16,6 +17,7 @@ export default class TaskPresenter {
   #taskEditComponent = null;
 
   #mode = Mode.DEFAULT;
+  #task = null;
 
   constructor({taskListContainer, onModeChange, onDataChange}) {
     this.#taskListContainer = taskListContainer;
@@ -24,15 +26,19 @@ export default class TaskPresenter {
   }
 
   init(task) {
+    this.#task = task;
+
     const prevTaskComponent = this.#taskComponent;
     const prevTaskEditComponent = this.#taskEditComponent;
 
     this.#taskComponent = new TaskView({
-      task,
+      task: this.#task,
       onEditClick: this.#handleEditClick,
+      onFavoriteClick: this.#handleFavoriteClick,
+      onArchiveClick: this.#handleArchiveClick
     });
     this.#taskEditComponent = new TaskEditView({
-      task,
+      task: this.#task,
       onFormSubmit: this.#handleFormSubmit,
     });
 
@@ -72,8 +78,24 @@ export default class TaskPresenter {
     }
   };
 
+  #handleArchiveClick = () => {
+    this.#onDataChange(
+      UserAction.UPDATE_TASK,
+      UpdateType.MINOR,
+      {...this.#task, isArchive: !this.#task.isArchive},
+    );
+  };
+
   #handleEditClick = () => {
     this.#replaceCardToForm();
+  };
+
+  #handleFavoriteClick = () => {
+    this.#onDataChange(
+      UserAction.UPDATE_TASK,
+      UpdateType.MINOR,
+      {...this.#task, isFavorite: !this.#task.isFavorite},
+    );
   };
 
   #handleFormSubmit = () => {
