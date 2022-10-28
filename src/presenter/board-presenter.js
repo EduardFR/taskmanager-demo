@@ -29,22 +29,7 @@ export default class BoardPresenter {
   }
 
   init() {
-    render(this.#boardComponent, this.#boardContainer);
-
-    if (this.#isLoading) {
-      render(this.#loadingComponent, this.#boardComponent.element, RenderPosition.AFTERBEGIN);
-      return;
-    }
-
-    render(new SortView(), this.#boardComponent.element);
-    render(this.#taskListComponent, this.#boardComponent.element);
-    render(new TaskEditView({task: this.tasks[0]}), this.#taskListComponent.element);
-
-    for (let i = 1; i < this.tasks.length; i++) {
-      render(new TaskView({task: this.tasks[i]}), this.#taskListComponent.element);
-    }
-
-    render(new LoadMoreButtonView(), this.#boardComponent.element);
+    this.#renderBoard();
   }
 
   #handleModelEvent = () => {
@@ -52,4 +37,38 @@ export default class BoardPresenter {
     remove(this.#loadingComponent);
     this.init();
   };
+
+  #renderLoading() {
+    render(this.#loadingComponent, this.#boardComponent.element, RenderPosition.AFTERBEGIN);
+  }
+
+  #renderLoadMoreButton() {
+    render(new LoadMoreButtonView(), this.#boardComponent.element);
+  }
+
+  #renderSort() {
+    render(new SortView(), this.#boardComponent.element);
+  }
+
+  #renderTasks() {
+    render(new TaskEditView({task: this.tasks[0]}), this.#taskListComponent.element);
+
+    for (let i = 1; i < this.tasks.length; i++) {
+      render(new TaskView({task: this.tasks[i]}), this.#taskListComponent.element);
+    }
+  }
+
+  #renderBoard() {
+    render(this.#boardComponent, this.#boardContainer);
+
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
+    this.#renderSort();
+    render(this.#taskListComponent, this.#boardComponent.element);
+    this.#renderTasks();
+    this.#renderLoadMoreButton();
+  }
 }
