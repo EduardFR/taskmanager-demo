@@ -23,7 +23,7 @@ export default class TasksModel extends Observable {
     return this.#tasks;
   }
 
-  async updateTask(update) {
+  async updateTask(updateType, update) {
     const index = this.#tasks.findIndex((task) => task.id === update.id);
 
     if (index === -1) {
@@ -37,21 +37,23 @@ export default class TasksModel extends Observable {
         updatedTask,
         ...this.#tasks.slice(index + 1),
       ];
+      this._notify(updateType, updatedTask);
     } catch(err) {
       throw new Error('Can\'t update task');
     }
   }
 
-  async addTask(update) {
+  async addTask(updateType, update) {
     try {
       const newTask = await this.#tasksApiService.addTask(update);
       this.#tasks = [newTask, ...this.#tasks];
+      this._notify(updateType, newTask);
     } catch(err) {
       throw new Error('Can\'t add task');
     }
   }
 
-  async deleteTask(update) {
+  async deleteTask(updateType, update) {
     const index = this.#tasks.findIndex((task) => task.id === update.id);
 
     if (index === -1) {
@@ -64,6 +66,7 @@ export default class TasksModel extends Observable {
         ...this.#tasks.slice(0, index),
         ...this.#tasks.slice(index + 1),
       ];
+      this._notify(updateType);
     } catch(err) {
       throw new Error('Can\'t delete task');
     }

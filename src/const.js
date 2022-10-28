@@ -19,4 +19,10 @@ const SortType = {
   DATE_UP: 'date-up',
 };
 
-export {COLORS, FilterType, UpdateType, SortType};
+const UserAction = {
+  UPDATE_TASK: 'UPDATE_TASK',
+  ADD_TASK: 'ADD_TASK',
+  DELETE_TASK: 'DELETE_TASK',
+};
+
+export {COLORS, FilterType, UpdateType, SortType, UserAction};

@@ -6,7 +6,7 @@ import LoadMoreButtonView from '../view/load-more-button-view.js';
 import LoadingView from '../view/loading-view.js';
 import NoTaskView from '../view/no-task-view.js';
 import TaskPresenter from './task-presenter.js';
-import {SortType} from '../const.js';
+import {SortType, UserAction} from '../const.js';
 import {sortTaskUp, sortTaskDown} from '../utils/task.js';
 
 const TASK_COUNT_PER_STEP = 8;
@@ -77,6 +77,19 @@ export default class BoardPresenter {
     this.init();
   };
 
+  #handleViewAction = (actionType, updateType, update) => {
+    switch (actionType) {
+      case UserAction.UPDATE_TASK:
+        this.#tasksModel.updateTask(updateType, update);
+        break;
+      case UserAction.ADD_TASK:
+        this.#tasksModel.addTask(updateType, update);
+        break;
+      case UserAction.DELETE_TASK:
+        this.#tasksModel.deleteTask(updateType, update);
+    }
+  };
+
   #handleLoadMoreButtonClick = () => {
     const taskCount = this.tasks.length;
     const newRenderedTaskCount = Math.min(taskCount, this.#renderedTaskCount + TASK_COUNT_PER_STEP);
@@ -131,7 +144,8 @@ export default class BoardPresenter {
   #renderTask(task) {
     const taskPresenter = new TaskPresenter({
       taskListContainer: this.#taskListComponent.element,
-      onModeChange: this.#handleModeChange
+      onModeChange: this.#handleModeChange,
+      onDataChange: this.#handleViewAction
     });
     taskPresenter.init(task);
     this.#taskPresenter.set(task.id, taskPresenter);

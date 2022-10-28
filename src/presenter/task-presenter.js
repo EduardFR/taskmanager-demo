@@ -10,15 +10,17 @@ const Mode = {
 export default class TaskPresenter {
   #taskListContainer = null;
   #onModeChange = null;
+  #onDataChange = null;
 
   #taskComponent = null;
   #taskEditComponent = null;
 
   #mode = Mode.DEFAULT;
 
-  constructor({taskListContainer, onModeChange}) {
+  constructor({taskListContainer, onModeChange, onDataChange}) {
     this.#taskListContainer = taskListContainer;
     this.#onModeChange = onModeChange;
+    this.#onDataChange = onDataChange;
   }
 
   init(task) {
