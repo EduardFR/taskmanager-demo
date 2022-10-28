@@ -62,6 +62,10 @@ export default class BoardPresenter {
     }
   };
 
+  #handleModeChange = () => {
+    this.#taskPresenter.forEach((presenter) => presenter.resetView());
+  };
+
   #renderLoading() {
     render(this.#loadingComponent, this.#boardComponent.element, RenderPosition.AFTERBEGIN);
   }
@@ -84,7 +88,8 @@ export default class BoardPresenter {
 
   #renderTask(task) {
     const taskPresenter = new TaskPresenter({
-      taskListContainer: this.#taskListComponent.element
+      taskListContainer: this.#taskListComponent.element,
+      onModeChange: this.#handleModeChange
     });
     taskPresenter.init(task);
   }

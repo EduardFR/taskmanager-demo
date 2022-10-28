@@ -9,14 +9,16 @@ const Mode = {
 
 export default class TaskPresenter {
   #taskListContainer = null;
+  #onModeChange = null;
 
   #taskComponent = null;
   #taskEditComponent = null;
 
   #mode = Mode.DEFAULT;
 
-  constructor({taskListContainer}) {
+  constructor({taskListContainer, onModeChange}) {
     this.#taskListContainer = taskListContainer;
+    this.#onModeChange = onModeChange;
   }
 
   init(task) {
@@ -50,6 +52,12 @@ export default class TaskPresenter {
     remove(prevTaskEditComponent);
   }
 
+  resetView() {
+    if (this.#mode !== Mode.DEFAULT) {
+      this.#replaceFormToCard();
+    }
+  }
+
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
@@ -68,6 +76,7 @@ export default class TaskPresenter {
   #replaceCardToForm = () => {
     replace(this.#taskEditComponent, this.#taskComponent);
     document.addEventListener('keydown', this.#escKeyDownHandler);
+    this.#onModeChange();
     this.#mode = Mode.EDITING;
   };
 
