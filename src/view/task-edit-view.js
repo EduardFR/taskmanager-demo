@@ -93,6 +93,8 @@ function createTaskEditTemplate(data) {
 
   const colorsTemplate = createTaskEditColorsTemplate(color);
 
+  const isSubmitDisabled = isRepeating && !isTaskRepeating(repeating);
+
   return (
     `<article class="card card--edit card--${color} ${repeatingClassName}">
       <form class="card__form" method="get">
@@ -131,7 +133,7 @@ function createTaskEditTemplate(data) {
           </div>
 
           <div class="card__status-btns">
-            <button class="card__save" type="submit">save</button>
+            <button class="card__save" type="submit" ${isSubmitDisabled ? 'disabled' : ''}>save</button>
             <button class="card__delete" type="button">delete</button>
           </div>
         </div>
@@ -156,11 +158,52 @@ export default class TaskEditView extends AbstractStatefulView {
   _restoreHandlers() {
     this.element.querySelector('form')
       .addEventListener('submit', this.#formSubmitHandler);
+    this.element.querySelector('.card__date-deadline-toggle')
+      .addEventListener('click', this.#dueDateToggleHandler);
+    this.element.querySelector('.card__repeat-toggle')
+      .addEventListener('click', this.#repeatingToggleHandler);
+    this.element.querySelector('.card__colors-wrap')
+      .addEventListener('change', this.#colorChangeHandler);
+
+    if (this._state.isRepeating) {
+      this.element.querySelector('.card__repeat-days-inner')
+        .addEventListener('change', this.#repeatingChangeHandler);
+    }
   }
+
+  #colorChangeHandler = (evt) => {
+    evt.preventDefault();
+    this.updateElement({
+      color: evt.target.value,
+    });
+  };
+
+  #dueDateToggleHandler = (evt) => {
+    evt.preventDefault();
+    this.updateElement({
+      isDueDate: !this._state.isDueDate,
+      isRepeating: !this._state.isDueDate ? false : this._state.isRepeating,
+    });
+  };
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
     this._callback.formSubmit(this.#parseStateToTask(this._state));
+  };
+
+  #repeatingChangeHandler = (evt) => {
+    evt.preventDefault();
+    this.updateElement({
+      repeating: {...this._state.repeating, [evt.target.value]: evt.target.checked},
+    });
+  };
+
+  #repeatingToggleHandler = (evt) => {
+    evt.preventDefault();
+    this.updateElement({
+      isRepeating: !this._state.isRepeating,
+      isDueDate: !this._state.isRepeating ? false : this._state.isDueDate,
+    });
   };
 
   #parseTaskToState(task) {
