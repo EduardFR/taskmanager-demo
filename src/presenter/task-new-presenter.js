@@ -42,6 +42,18 @@ export default class TaskNewPresenter {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
+  setAborting() {
+    const resetFormState = () => {
+      this.#taskEditComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#taskEditComponent.shake(resetFormState);
+  }
+
   setSaving() {
     this.#taskEditComponent.updateElement({
       isDisabled: true,

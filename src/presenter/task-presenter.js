@@ -74,6 +74,23 @@ export default class TaskPresenter {
     }
   }
 
+  setAborting() {
+    if (this.#mode === Mode.DEFAULT) {
+      this.#taskComponent.shake();
+      return;
+    }
+
+    const resetFormState = () => {
+      this.#taskEditComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#taskEditComponent.shake(resetFormState);
+  }
+
   setDeleting() {
     if (this.#mode === Mode.EDITING) {
       this.#taskEditComponent.updateElement({
