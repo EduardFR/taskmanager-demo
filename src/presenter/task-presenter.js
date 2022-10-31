@@ -41,6 +41,7 @@ export default class TaskPresenter {
     this.#taskEditComponent = new TaskEditView({
       task: this.#task,
       onFormSubmit: this.#handleFormSubmit,
+      onDeleteClick: this.#handleDeleteClick
     });
 
     if (prevTaskComponent === null || prevTaskEditComponent === null) {
@@ -86,6 +87,14 @@ export default class TaskPresenter {
       UserAction.UPDATE_TASK,
       UpdateType.MINOR,
       {...this.#task, isArchive: !this.#task.isArchive},
+    );
+  };
+
+  #handleDeleteClick = (task) => {
+    this.#onDataChange(
+      UserAction.DELETE_TASK,
+      UpdateType.MINOR,
+      task,
     );
   };
 
