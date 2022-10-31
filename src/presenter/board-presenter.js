@@ -1,4 +1,5 @@
 import {render, remove, RenderPosition} from '../framework/render.js';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 import BoardView from '../view/board-view.js';
 import SortView from '../view/sort-view.js';
 import TaskListView from '../view/task-list-view.js';
@@ -12,6 +13,10 @@ import {sortTaskUp, sortTaskDown} from '../utils/task.js';
 import {filter} from '../utils/filter.js';
 
 const TASK_COUNT_PER_STEP = 8;
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
 
 export default class BoardPresenter {
   #boardContainer = null;
@@ -24,6 +29,10 @@ export default class BoardPresenter {
   #noTaskComponent = null;
   #loadMoreButtonComponent = null;
   #sortComponent = null;
+  #uiBlocker = new UiBlocker({
+    lowerLimit: TimeLimit.LOWER_LIMIT,
+    upperLimit: TimeLimit.UPPER_LIMIT
+  });
 
   #isLoading = true;
   #filterType = null;
@@ -119,6 +128,8 @@ export default class BoardPresenter {
   };
 
   #handleViewAction = async (actionType, updateType, update) => {
+    this.#uiBlocker.block();
+
     switch (actionType) {
       case UserAction.UPDATE_TASK:
         this.#taskPresenter.get(update.id).setSaving();
@@ -145,6 +156,8 @@ export default class BoardPresenter {
         }
         break;
     }
+
+    this.#uiBlocker.unblock();
   };
 
   #handleLoadMoreButtonClick = () => {
