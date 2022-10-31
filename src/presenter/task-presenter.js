@@ -74,6 +74,24 @@ export default class TaskPresenter {
     }
   }
 
+  setDeleting() {
+    if (this.#mode === Mode.EDITING) {
+      this.#taskEditComponent.updateElement({
+        isDisabled: true,
+        isDeleting: true,
+      });
+    }
+  }
+
+  setSaving() {
+    if (this.#mode === Mode.EDITING) {
+      this.#taskEditComponent.updateElement({
+        isDisabled: true,
+        isSaving: true,
+      });
+    }
+  }
+
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();

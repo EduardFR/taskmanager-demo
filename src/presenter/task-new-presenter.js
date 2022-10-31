@@ -42,6 +42,13 @@ export default class TaskNewPresenter {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
+  setSaving() {
+    this.#taskEditComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
   #handleFormSubmit = (task) => {
     this.#onDataChange(
       UserAction.ADD_TASK,
