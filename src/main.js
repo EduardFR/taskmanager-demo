@@ -16,7 +16,8 @@ const filterModel = new FilterModel();
 const boardPresenter = new BoardPresenter({
   boardContainer: siteMainElement,
   tasksModel,
-  filterModel
+  filterModel,
+  onNewTaskDestroy: handleNewTaskFormClose
 });
 const filterPresenter = new FilterPresenter({
   filterContainer: siteMainElement,
@@ -24,7 +25,20 @@ const filterPresenter = new FilterPresenter({
   tasksModel
 });
 
-render(new NewTaskButtonView(), siteHeaderElement);
+const newTaskButtonComponent = new NewTaskButtonView({
+  onClick: handleNewTaskButtonClick
+});
+
+function handleNewTaskFormClose() {
+  newTaskButtonComponent.element.disabled = false;
+}
+
+function handleNewTaskButtonClick() {
+  boardPresenter.createTask();
+  newTaskButtonComponent.element.disabled = true;
+}
+
+render(newTaskButtonComponent, siteHeaderElement);
 
 filterPresenter.init();
 boardPresenter.init();
