@@ -3,6 +3,8 @@ import ApiService from './framework/api-service.js';
 const Method = {
   GET: 'GET',
   PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE',
 };
 
 export default class TasksApiService extends ApiService {
@@ -23,6 +25,26 @@ export default class TasksApiService extends ApiService {
     const parsedResponse = await ApiService.parseResponse(response);
 
     return this.#adaptToClient(parsedResponse);
+  }
+
+  async addTask(task) {
+    const response = await this._load({
+      url: 'tasks',
+      method: Method.POST,
+      body: JSON.stringify(this.#adaptToServer(task)),
+      headers: new Headers({'Content-Type': 'application/json'}),
+    });
+
+    const parsedResponse = await ApiService.parseResponse(response);
+
+    return this.#adaptToClient(parsedResponse);
+  }
+
+  async deleteTask(task) {
+    await this._load({
+      url: `tasks/${task.id}`,
+      method: Method.DELETE,
+    });
   }
 
   #adaptToClient(task) {

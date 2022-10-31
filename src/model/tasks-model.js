@@ -16,14 +16,7 @@ export default class TasksModel extends Observable {
       this.#tasks = [];
     }
 
-    // this._notify(UpdateType.INIT);
-    this.#tasksApiService.getTasks().then((tasks) => {
-      console.log(tasks);
-      // Есть проблема: cтруктура объекта похожа, но некоторые ключи называются иначе,
-      // а ещё на сервере используется snake_case, а у нас camelCase.
-      // Можно, конечно, переписать часть нашего клиентского приложения, но зачем?
-      // Есть вариант получше - паттерн "Адаптер"
-    });
+    this._notify(UpdateType.INIT);
   }
 
   getTasks() {
